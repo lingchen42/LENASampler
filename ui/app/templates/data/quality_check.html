@@ -1,0 +1,100 @@
+{% extends "data/data_nav.html" %}
+
+{% block app_content_content %}
+<div style="margin-left:200px;">
+    <div class="row">
+        <div class="col-10" style="margin-left: 20px;">
+            <div class="overflow-x:scroll max-width:20%">
+                <div class="row">
+                    <h4> Quality Summary </h4>
+                </div>
+                {% if columns1|length %}
+                <div class="row" style="margin-top:20px;">
+                    <div style="overflow-y:scroll; max-height:80vh">
+                        <table class="styled-table" id="quality_summary">
+                            <thead>
+                                <tr>
+                                {% for col in columns1 %}
+                                    <th>{{col}}</th>
+                                {% endfor %}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for row in records1 %}
+                                <tr>
+                                {% for col in row %}
+                                    <td>{{ row[col]|safe }}</td>
+                                {% endfor %}
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div> 
+                {% endif %}
+            </div>
+            <hr>
+            <br>
+            <div class="overflow-x:scroll max-width:20%">
+                <div class="row">
+                    <h4> Per file quality </h4>
+                </div>
+                {% if columns2|length %}
+                <div class="row" style="margin-top:20px;">
+                    <div style="overflow-y:scroll; max-height:80vh">
+                        <table class="styled-table" id="quality_perfile">
+                            <thead>
+                                <tr>
+                                {% for col in columns2 %}
+                                    <th>{{col}}</th>
+                                {% endfor %}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for row in records2 %}
+                                <tr>
+                                {% for col in row %}
+                                    <td>{{ row[col]|safe }}</td>
+                                {% endfor %}
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div> 
+                {% endif %}
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready( function () {
+        $.noConflict();
+        $('#quality_summary').DataTable( {
+            dom: 'Bfrtip',
+            buttons: [
+                'excelHtml5',
+                'csvHtml5',
+                {
+                    extend: 'colvis',
+                    columns: ':not(.noVis)'
+                }
+            ],
+        } );
+        $('#quality_perfile').DataTable( {
+            dom: 'Bfrtip',
+            buttons: [
+                'excelHtml5',
+                'csvHtml5',
+                {
+                    extend: 'colvis',
+                    columns: ':not(.noVis)'
+                }
+            ],
+        } );
+    } );
+</script>
+
+{% endblock %} 

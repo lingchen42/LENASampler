@@ -1,0 +1,11 @@
+openpyxl
+SQLAlchemy
+pandas
+matplotlib
+seaborn
+Flask-Migrate
+Flask-Bootstrap4
+Flask-WTF
+Flask-Session
+plotly
+moviepy
