@@ -17,7 +17,7 @@
     <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.print.min.js"></script>
 
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script> 
-    <link rel="shortcut icon" href="{{ url_for('static', filename='lenasampler.ico') }}">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='logo.ico') }}">
 
 
 {% endblock %}
@@ -32,11 +32,11 @@
 {% endblock %}}
 
 {% block navbar %}
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark" style="margin-bottom:10px">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark" style="margin-bottom:10px; background-color: #a08bb3;">
         <div class="container-fluid">
             <a class="navbar-brand" href="{{ url_for('index') }}">
                 <div class="logo-image">
-                      <img src="{{url_for('static', filename='lenasampler.png')}}" class="img-fluid" width="50px">
+                      <img src="{{url_for('static', filename='logo.png')}}" class="img-fluid" width="50px">
                 </div>
             </a>
             <a class="navbar-brand" href="{{ url_for('index') }}">LenaSampler</a>

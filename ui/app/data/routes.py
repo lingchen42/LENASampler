@@ -187,9 +187,9 @@ def sample2():
 
     for col in sampling_criteria_cols :
         setattr(SamplingForm, "%s_min_value"%col, 
-            IntegerField("%s min value (median is %s)"%(col, dft[col].median())))
+            IntegerField("%s min value (>=, %s median is %s)"%(col, col, dft[col].median())))
         setattr(SamplingForm, "%s_max_value"%col,
-            IntegerField("%s max value (median is %s)"%(col, dft[col].median())))
+            IntegerField("%s max value (<=, %s median is %s)"%(col, col, dft[col].median())))
     setattr(SamplingForm, "submit", SubmitField('Confirm'))
     form = SamplingForm()
 
