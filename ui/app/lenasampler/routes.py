@@ -9,9 +9,9 @@ from zipfile import ZipFile
 from werkzeug.utils import secure_filename
 from flask import redirect, render_template, url_for, request, session, Response
 from app import app
-from app.data import bp
-from app.data.forms import *
-from app.data.utils import *
+from app.lenasampler import bp
+from app.lenasampler.forms import *
+from app.lenasampler.utils import *
 
 
 @bp.route('/data', methods=['GET', 'POST'])
@@ -49,7 +49,7 @@ def data():
                     return render_template("error.html", 
                                             message=traceback.format_exc())
 
-        return redirect(url_for('data.view_data'))
+        return redirect(url_for('lenasampler.view_data'))
 
     status_df = pd.DataFrame({
         "Current Items": ["Filename", "Audio Directory", 
@@ -61,7 +61,7 @@ def data():
     status_records = status_df.to_dict("records")
     status_columns = status_df.columns
     
-    return render_template("data/data.html",
+    return render_template("lenasampler/data.html",
                             form=form,
                             columns=status_columns,
                             records=status_records)
@@ -71,7 +71,7 @@ def data():
 def view_data():
     records = session.get('records', [])
     columns = session.get('columns', [])
-    return render_template("data/view_data.html",
+    return render_template("lenasampler/view_data.html",
                             columns=columns,
                             records=records)
 
@@ -102,7 +102,7 @@ def quality_check():
     session["quality_perfile_records"] = quality_perfile_records
     session['quality_check_status'] = is_perfect_match
 
-    return render_template("data/quality_check.html",
+    return render_template("lenasampler/quality_check.html",
                             columns1=quality_summary_columns,
                             records1=quality_summary_records,
                             columns2=quality_perfile_columns,
@@ -143,7 +143,7 @@ def filter():
         records_after_filtering = dft.to_dict("records")
         session["records_after_filtering"] = records_after_filtering
 
-    return render_template("data/filter.html",
+    return render_template("lenasampler/filter.html",
                            form=form,
                            columns=columns,
                            records=records_after_filtering)
@@ -163,9 +163,9 @@ def sample1():
 
     if sampling_cols_form.validate_on_submit():
         session["sampling_criteria_cols"] = sampling_cols_form.samplingcols.data
-        return redirect(url_for("data.sample2"))
+        return redirect(url_for("lenasampler.sample2"))
 
-    return render_template("data/sampling.html", 
+    return render_template("lenasampler/sampling.html", 
                             form=sampling_cols_form,
                             columns=[],
                             records=[])
@@ -220,7 +220,7 @@ def sample2():
         sampled_records = dft.to_dict("records")
         session["sampled_records"] = sampled_records
 
-    return render_template("data/sampling.html", 
+    return render_template("lenasampler/sampling.html", 
                             form=form,
                             columns=columns,
                             records=sampled_records)
@@ -266,7 +266,7 @@ def export_sampled_audio():
             'Content-Disposition': 'attachment; filename=%s;'%export_fn
         })
 
-    return render_template("data/export.html", 
+    return render_template("lenasampler/export.html", 
                             form=form,
                             columns=columns,
                             records=sampled_records)
@@ -275,4 +275,4 @@ def export_sampled_audio():
 @bp.route("/reset_session", methods=["GET", "POST"])
 def reset_session():
     session.clear()
-    return render_template("data/reset_session.html")
+    return render_template("lenasampler/reset_session.html")

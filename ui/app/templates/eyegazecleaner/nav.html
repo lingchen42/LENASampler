@@ -7,20 +7,17 @@
     {% block app_content_sidebar %}
 
     {% set navigation_bar = [
-        (url_for('data.data'), 'data_input', '1. Input'),
-        (url_for('data.view_data'), 'data_view', '2. View Input Table'),
-        (url_for('data.quality_check'), 'data_qualitycheck', '3. Quality Check'),
-        (url_for('data.filter'), 'data_filter', '4. Quality Filtering'),
-        (url_for('data.sample1'), 'data_sample', '5. Sample'),
-        (url_for('data.export_sampled_audio'), 'data_export_sampled_audio', '6. Export Sampled Audio'),
-        (url_for('data.reset_session'), 'data_reset_session', '7. Reset'),
+        (url_for('eyegazecleaner.input'), 'input', '1. Input'),
+        (url_for('eyegazecleaner.view_data'), 'view_data', '1.1. View Input File'),
+        (url_for('eyegazecleaner.quality_check'), 'quality_check', '1.2. Quality Check'),
+        (url_for('eyegazecleaner.reset_session'), 'reset_session', '3. Reset Session'),
     ] -%}
 
     <div id="sidebar-wrapper">
         <ul class="sidebar-nav">
             <li class="sidebar-brand">
                 <a href="#">
-                    Lena Sampler Input
+                    Eyegaze Cleaner
                 </a>
             </li>
             {% for href, id, caption in navigation_bar %}

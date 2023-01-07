@@ -8,7 +8,7 @@ from app import app
 @app.route("/")
 @app.route('/index')
 def index():
-    return redirect(url_for('data.data')) 
+    return redirect(url_for('lenasampler.data')) 
 
 
 @app.errorhandler(HTTPException)

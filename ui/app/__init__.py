@@ -15,7 +15,9 @@ bootstrap = Bootstrap(app)
 Session(app)
 db.init_app(app)
 
-from app.data import bp as data_bp
-app.register_blueprint(data_bp, url_prefix='/data')
+from app.lenasampler import bp as lenasampler_bp
+from app.eyegazecleaner import bp as eyegazecleaner_bp
+app.register_blueprint(lenasampler_bp, url_prefix='/lenasampler')
+app.register_blueprint(eyegazecleaner_bp, url_prefix='/eyegazecleaner')
 
 from app import routes, models

@@ -1,0 +1,65 @@
+{% extends "lenasampler/data_nav.html" %}
+
+{% block app_content_content %}
+<div style="margin-left:200px;">
+    <div class="row">
+        <div class="col-4">
+            <div class="row">
+                <h4> Export </h4>
+            </div>
+            <div class="row">
+                {{ wtf.quick_form(form) }}
+            </div>
+        </div>
+        <div class="col-6" style="margin-left: 20px;">
+            <div class="overflow-x:scroll max-width:20%">
+                <div class="row">
+                    <h4> To-be-exported audio segments </h4>
+                </div>
+                {% if columns|length %}
+                <div class="row" style="margin-top:20px;">
+                    <div style="overflow-y:scroll; max-height:80vh">
+                        <table class="styled-table" id="datainput">
+                            <thead>
+                                <tr>
+                                {% for col in columns %}
+                                    <th>{{col}}</th>
+                                {% endfor %}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for row in records %}
+                                <tr>
+                                {% for col in row %}
+                                    <td>{{ row[col]|safe }}</td>
+                                {% endfor %}
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div> 
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready( function () {
+        $.noConflict();
+        $('#datainput').DataTable( {
+            dom: 'Bfrtip',
+            buttons: [
+                'excelHtml5',
+                'csvHtml5',
+                {
+                    extend: 'colvis',
+                    columns: ':not(.noVis)'
+                }
+            ],
+        } );
+    } );
+</script>
+
+{% endblock %} 

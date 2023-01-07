@@ -4,7 +4,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 
 class Config(object):
-    name = "LenaSampler"
+    name = "LILAC Tool Suite"
     SECRET_KEY = 'you-would-never-guess'
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
         'sqlite:///' + os.path.join(basedir, 'app.db')

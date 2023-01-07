@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block app_content %}
+<div class="wrapper">
+
+    {% block app_content_sidebar %}
+
+    {% set navigation_bar = [
+        (url_for('lenasampler.data'), 'data_input', '1. Input'),
+        (url_for('lenasampler.view_data'), 'data_view', '2. View Input Table'),
+        (url_for('lenasampler.quality_check'), 'data_qualitycheck', '3. Quality Check'),
+        (url_for('lenasampler.filter'), 'data_filter', '4. Quality Filtering'),
+        (url_for('lenasampler.sample1'), 'data_sample', '5. Sample'),
+        (url_for('lenasampler.export_sampled_audio'), 'data_export_sampled_audio', '6. Export Sampled Audio'),
+        (url_for('lenasampler.reset_session'), 'data_reset_session', '7. Reset'),
+    ] -%}
+
+    <div id="sidebar-wrapper">
+        <ul class="sidebar-nav">
+            <li class="sidebar-brand">
+                <a href="#">
+                    Lena Sampler
+                </a>
+            </li>
+            {% for href, id, caption in navigation_bar %}
+                {% if url_for(request.endpoint) == href%}
+                 <li class="active" style="font-weight: bold;"><a href="{{ href|e }}">{{ caption|e }}</a></li>
+                {% else %}
+                 <li><a href="{{ href|e }}">{{ caption|e }}</a></li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+    </div>
+    {% endblock %}
+
+    <div id="page-content-wrapper">
+        <div class="container-fluid">
+                {% block app_content_content%}{% endblock %}
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}
