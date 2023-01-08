@@ -9,10 +9,28 @@ class Config(object):
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
         'sqlite:///' + os.path.join(basedir, 'app.db')
     SESSION_TYPE = "filesystem"
+    #SESSION_PERMANENT = False
     PERMANENT_SESSION_LIFETIME = timedelta(hours=24)
+
+    # lenasampler settings
     ITS_FILENAME_COL = "ITS_File_Name"
     START_TIME_COL = "StartTime"
     DURATION_COL = "Duration_Secs"
     DEFAULT_FILTER_NUM_COLUMNS = ["Duration_Secs", "Silence"]
     SAMPLING_CRITERIA_COLS = ["CT_COUNT"]
-    #SESSION_PERMANENT = False
+
+    # eyegazecleaner settings
+    CODE_COL = "code"
+    ONSET_COL = "onset"
+    OFFSET_COL = "offset"
+    TRIAL_ID_COL = "trial_id"
+    BEGIN_CODE = "B"
+    END_CODE = "S"
+    CODE_MEANING_DICT = {
+        "L": "left",
+        "R": "right",
+        "C": "center"
+    }
+    DEFAULT_CODES = ["B", "S", "L", "R", "C"]
+    DISCRENPANCY_THRESHOLD_MILISECONDS = 500
+    DISCRENPANCY_THRESHOLD_FRAME = 500 * 0.03

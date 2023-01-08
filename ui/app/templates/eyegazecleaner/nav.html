@@ -8,9 +8,12 @@
 
     {% set navigation_bar = [
         (url_for('eyegazecleaner.input'), 'input', '1. Input'),
-        (url_for('eyegazecleaner.view_data'), 'view_data', '1.1. View Input File'),
-        (url_for('eyegazecleaner.quality_check'), 'quality_check', '1.2. Quality Check'),
-        (url_for('eyegazecleaner.reset_session'), 'reset_session', '3. Reset Session'),
+        (url_for('eyegazecleaner.batch_input'), 'batch_input', '2. Batch Input'),
+        (url_for('eyegazecleaner.compare_two'), 'compare_two', '3. Compare Two'),
+        (url_for('eyegazecleaner.view_data'), 'view_data', '1. View Input File'),
+        (url_for('eyegazecleaner.quality_check'), 'quality_check', '2. Quality Check'),
+        (url_for('eyegazecleaner.trial_summary'), 'trial_summary', '3. View Trial Summary'),
+        (url_for('eyegazecleaner.reset_session'), 'reset_session', '4. Reset Session'),
     ] -%}
 
     <div id="sidebar-wrapper">
@@ -21,10 +24,28 @@
                 </a>
             </li>
             {% for href, id, caption in navigation_bar %}
-                {% if url_for(request.endpoint) == href%}
-                 <li class="active" style="font-weight: bold;"><a href="{{ href|e }}">{{ caption|e }}</a></li>
-                {% else %}
-                 <li><a href="{{ href|e }}">{{ caption|e }}</a></li>
+                {% if id in ('input', 'batch_input', 'compare_two')%}
+                    {% if url_for(request.endpoint) == href%}
+                    <li class="active" style="font-weight: bold;"><a href="{{ href|e }}">{{ caption|e }}</a></li>
+                    {% else %}
+                    <li><a href="{{ href|e }}">{{ caption|e }}</a></li>
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+            <hr>
+            <li>
+                <a>
+                    Auxillary Views
+                </a>
+            </li>
+            
+            {% for href, id, caption in navigation_bar %}
+                {% if id not in ('input', 'batch_input', 'compare_two')%}
+                    {% if url_for(request.endpoint) == href%}
+                    <li class="active" style="font-weight: bold;"><a href="{{ href|e }}">{{ caption|e }}</a></li>
+                    {% else %}
+                    <li><a href="{{ href|e }}">{{ caption|e }}</a></li>
+                    {% endif %}
                 {% endif %}
             {% endfor %}
         </ul>

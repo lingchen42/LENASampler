@@ -3,7 +3,7 @@
 {% block app_content_content %}
 <div style="margin-left:200px;">
     <div class="row">
-        <div class="col-3">
+        <div class="col-2">
             <div class="row">
                 <h4> Input </h4>
             </div>
@@ -11,10 +11,10 @@
                 {{ wtf.quick_form(form) }}
             </div>
         </div>
-        <div class="col-7" style="margin-left: 20px;">
+        <div class="col-8" style="margin-left: 20px;">
             <div class="overflow-x:scroll max-width:20%">
                 <div class="row">
-                    <h4> Status </h4>
+                    <h4> Comparison Result </h4>
                 </div>
                 {% if columns|length %}
                 <div class="row" style="margin-top:20px;">
@@ -45,13 +45,19 @@
     </div>
     <hr>
     <div>
-            <li><small>See an example csv file with milisecond as the timestamp unit here, this file SHOULD HAVE HEADER: TO BE IMPLEMENTED</small></li>
-            <li><small>See an example csv file with frame as the timestamp unit here, this file SHOULD NOT HAVE HEADER: TO BE IMPLEMENTED</small></li>
+            <li><small>If coder 1 and coder 2 has different timestamp unit, coder 2 file will be converted to use coder 1's timestsamp unit</small></li>
     </div>
+    <meta id="my-data" data-threshold="{{diff_threshhold}}" data-inds="{{diff_col_indices}}">
 </div>
+
 
 <script>
     $(document).ready( function () {
+        var data = $('#my-data').data();
+        var threshold = parseInt(data.threshold);
+        console.log(data.inds)
+        console.log(threshold);
+
         $.noConflict();
         $('#datainput').DataTable( {
             dom: 'Bfrtip',
@@ -63,6 +69,11 @@
                     columns: ':not(.noVis)'
                 }
             ],
+            'rowCallback': function(row, data, index){
+                            if(data[3]> threshold){
+                                $(row).find('td:eq(3)').css('color', 'red');
+                            }
+                        }
         } );
     } );
 </script>
