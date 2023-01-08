@@ -9,7 +9,8 @@
     {% set navigation_bar = [
         (url_for('eyegazecleaner.input'), 'input', '1. Input'),
         (url_for('eyegazecleaner.batch_input'), 'batch_input', '2. Batch Input'),
-        (url_for('eyegazecleaner.compare_two'), 'compare_two', '3. Compare Two'),
+        (url_for('eyegazecleaner.compare_two'), 'compare_two', '3. Pair Compare'),
+        (url_for('eyegazecleaner.compare_three'), 'compare_three', '3. Merge The Third Coder'),
         (url_for('eyegazecleaner.view_data'), 'view_data', '1. View Input File'),
         (url_for('eyegazecleaner.quality_check'), 'quality_check', '2. Quality Check'),
         (url_for('eyegazecleaner.trial_summary'), 'trial_summary', '3. View Trial Summary'),
@@ -24,7 +25,7 @@
                 </a>
             </li>
             {% for href, id, caption in navigation_bar %}
-                {% if id in ('input', 'batch_input', 'compare_two')%}
+                {% if id in ('input', 'batch_input', 'compare_two', 'compare_three')%}
                     {% if url_for(request.endpoint) == href%}
                     <li class="active" style="font-weight: bold;"><a href="{{ href|e }}">{{ caption|e }}</a></li>
                     {% else %}
@@ -40,7 +41,7 @@
             </li>
             
             {% for href, id, caption in navigation_bar %}
-                {% if id not in ('input', 'batch_input', 'compare_two')%}
+                {% if id not in ('input', 'batch_input', 'compare_two', 'compare_three')%}
                     {% if url_for(request.endpoint) == href%}
                     <li class="active" style="font-weight: bold;"><a href="{{ href|e }}">{{ caption|e }}</a></li>
                     {% else %}

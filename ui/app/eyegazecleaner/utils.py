@@ -84,7 +84,7 @@ def read_data(fn, filepath, original_timestamp_unit,
 
 def check_eligible_codes_match(codes, eligible_codes):
     eligible_codes = [c.strip() for c in eligible_codes.split(",")]
-    return set(codes) == set(eligible_codes)
+    return set(codes).issubset(set(eligible_codes))
 
 
 def check_trial_begin_and_end_are_paired(df, code_col=app.config["CODE_COL"],
@@ -256,14 +256,48 @@ def run_trial_summary_comparison_two(records1, unit1, records2, unit2):
     dft = df1.join(df2, lsuffix='.1', rsuffix='.2')
     ordered_cols = []
     for c in df1.columns:
-        if c != app.config["TRIAL_ID_COL"]:
-            dft["%s.diff"%c] = np.abs(dft["%s.1"%c] - dft["%s.2"%c])
-            ordered_cols.extend(["%s.1"%c, "%s.2"%c, "%s.diff"%c])
-        else:
+        if c == app.config["TRIAL_ID_COL"]:
             dft[app.config["TRIAL_ID_COL"]] = dft["%s.1"%c]
             ordered_cols.append(c)
+        else:
+            if c == "attention.entire.trial":
+                ordered_cols.extend(["%s.1"%c, "%s.2"%c])
+            else:
+                dft["%s.diff"%c] = np.abs(dft["%s.1"%c] - dft["%s.2"%c])
+                ordered_cols.extend(["%s.1"%c, "%s.2"%c, "%s.diff"%c])
+            
     dft = dft[ordered_cols]
     diff_col_indices = [i for i, c in enumerate(dft.columns) \
                         if c.endswith(".diff")]
     
     return dft.to_dict("records"), dft.columns, diff_col_indices
+
+
+def has_discrepancy(row, diff_cols, threshold):
+    for c in diff_cols:
+        if row[c] > threshold:
+            return 1
+    return 0
+
+
+def highlight_compare_two_discrepancy_cell(x, threshold, color="red"):
+    return np.where(x > threshold, f"background-color: {color};", None)
+
+
+def highlight_compare_two_discrepancy_trialid(x, l, color="red"):
+    return np.where(x.isin(l), f"background-color: {color};", None)
+
+
+def highlight_compare_two_discrepancy(df, threshold, 
+                                      trial_id_col=app.config["TRIAL_ID_COL"]):
+    diff_cols = [c for c in df.columns if c.endswith(".diff")]
+    df["has_discrepancy"] = df.apply(has_discrepancy, 
+                                    args=(diff_cols, threshold),
+                                    axis=1)
+    # trail id is 1 indexed
+    has_discrepancy_trial_ids = np.where(df["has_discrepancy"] == 1)[0] + 1
+    df = df.style.apply(highlight_compare_two_discrepancy_cell, 
+                        threshold=threshold, subset=diff_cols)\
+                  .apply(highlight_compare_two_discrepancy_trialid, 
+                        l=has_discrepancy_trial_ids, subset=trial_id_col)
+    return df

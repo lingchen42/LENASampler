@@ -12,10 +12,10 @@ class DataInput(FlaskForm):
                                  "Only csv/xlsx file is accepted")])
     original_timestamp_unit = SelectField("Select original timestamp unit",
                           choices=["milisecond", "frame"],
-                          default="frame")
+                          default="milisecond")
     target_timestamp_unit = SelectField("Select target timestamp unit",
                           choices=["milisecond", "frame"],
-                          default="frame")
+                          default="milisecond")
     submit = SubmitField('Upload')
 
 
@@ -24,10 +24,10 @@ class BatchInput(FlaskForm):
                                     "contain Eyegaze Coding csv/xlsx files")
     original_timestamp_unit = SelectField("Select original timestamp unit",
                           choices=["milisecond", "frame"],
-                          default="frame")
+                          default="milisecond")
     target_timestamp_unit = SelectField("Select target timestamp unit",
                           choices=["milisecond", "frame"],
-                          default="frame")
+                          default="milisecond")
     expected_num_trials = IntegerField("How many trials are you expecting?")
     begin_code = StringField("Which code is the begining code?",
                         default=app.config["BEGIN_CODE"])
@@ -72,3 +72,25 @@ class CompareTwoInput(FlaskForm):
         if len(files):
             self.coder1.choices = files
             self.coder2.choices = files
+
+
+class CompareThreeInput(FlaskForm):
+    coder1 = SelectField("Select coder 1 file", choices=[], 
+                         render_kw={"readonly": True})
+    coder1_id = StringField("Code 1 File ID", 
+                             render_kw={"readonly": True})
+    coder2 = SelectField("Select coder 2 file", choices=[],
+                        render_kw={"readonly": True})
+    coder2_id = StringField("Code 2 File ID", 
+                             render_kw={"readonly": True})
+    coder3 = SelectField("Select coder 3 file", choices=[])
+    coder3_id = StringField("Code 3 File ID", 
+                             render_kw={"readonly": True})
+    submit = SubmitField('Run Comparison')
+    
+    def __init__(self, files=[], *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if len(files):
+            self.coder1.choices = files
+            self.coder2.choices = files
+            self.coder3.choices = files
