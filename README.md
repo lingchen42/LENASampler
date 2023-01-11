@@ -7,7 +7,7 @@
 ### Install LENASampler Web Application
 * Download LENASampler Code
 ```
-git clone https://github.com/lingchen42/LENASampler.git
+git clone https://github.com/lingchen42/LENASampler.git --branch v1.0.0
 ```
 
 * Install LENASampler on your local computer through terminal
