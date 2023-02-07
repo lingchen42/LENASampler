@@ -36,7 +36,7 @@ def data():
         if fn:
             filename = secure_filename(fn.filename)
             session["filename"] = filename
-            # delete=False allows prevents temp file permission issues
+            # delete=False prevents temp file permission issues
             with tempfile.NamedTemporaryFile(delete=False) as tmp:
                 fn.save(tmp.name)
                 try:
