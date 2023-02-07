@@ -35,24 +35,25 @@ def data():
         fn = form.fn.data
         if fn:
             filename = secure_filename(fn.filename)
-            session["filename"] = filename 
-            with tempfile.NamedTemporaryFile() as tmp:
+            session["filename"] = filename
+            # delete=False allows prevents temp file permission issues
+            with tempfile.NamedTemporaryFile(delete=False) as tmp:
                 fn.save(tmp.name)
                 try:
-                    dft = pd.read_csv(tmp.name) 
+                    dft = pd.read_csv(tmp.name)
                     dft = dft.reset_index()
                     columns = list(dft.columns)
                     records = dft.to_dict("records")
                     session['columns'] = columns
                     session['records'] = records
                 except Exception as e:
-                    return render_template("error.html", 
+                    return render_template("error.html",
                                             message=traceback.format_exc())
 
         return redirect(url_for('lenasampler.view_data'))
 
     status_df = pd.DataFrame({
-        "Current Items": ["Filename", "Audio Directory", 
+        "Current Items": ["Filename", "Audio Directory",
                  "Pass Quality Check"],
         "Value": [filename, audio_dir, quality_check_status],
         "Notes": ['', '', '']
@@ -60,7 +61,7 @@ def data():
     status_df = status_df.reset_index()
     status_records = status_df.to_dict("records")
     status_columns = status_df.columns
-    
+
     return render_template("lenasampler/data.html",
                             form=form,
                             columns=status_columns,
@@ -89,7 +90,7 @@ def quality_check():
     durationcol = app.config["DURATION_COL"]
     idprefix = session.get("filename", "").split("_")[0]
     dft_summary, dft_per_file, matched_itsfiles, is_perfect_match \
-        = run_quality_check(records, audio_dir, itsfilecol, durationcol, 
+        = run_quality_check(records, audio_dir, itsfilecol, durationcol,
                             idprefix)
     quality_summary_columns = dft_summary.columns
     quality_summary_records = dft_summary.to_dict("records")
@@ -156,16 +157,16 @@ def sample1():
     num_cols = list(dft._get_numeric_data().columns)
     sampling_cols_form = SamplingColsForm(num_cols)
     if request.method == "GET":
-        selected_sampling_cols = session.get("sampling_criteria_cols", 
+        selected_sampling_cols = session.get("sampling_criteria_cols",
                                         app.config["SAMPLING_CRITERIA_COLS"])
         sampling_cols_form.samplingcols.data \
-            = selected_sampling_cols  
+            = selected_sampling_cols
 
     if sampling_cols_form.validate_on_submit():
         session["sampling_criteria_cols"] = sampling_cols_form.samplingcols.data
         return redirect(url_for("lenasampler.sample2"))
 
-    return render_template("lenasampler/sampling.html", 
+    return render_template("lenasampler/sampling.html",
                             form=sampling_cols_form,
                             columns=[],
                             records=[])
@@ -180,13 +181,13 @@ def sample2():
     sampling_criteria_cols = session.get("sampling_criteria_cols", [])
 
     class SamplingForm(FlaskForm):
-        target_num_segments = IntegerField("Target number of segments", 
+        target_num_segments = IntegerField("Target number of segments",
             default=12, validators=[DataRequired(), NumberRange(min=0, max=len(dft))])
-        random_seed = IntegerField("Sampling Seed (for reproducibility)", 
+        random_seed = IntegerField("Sampling Seed (for reproducibility)",
             default=1, validators=[DataRequired(), NumberRange(min=0)])
 
     for col in sampling_criteria_cols :
-        setattr(SamplingForm, "%s_min_value"%col, 
+        setattr(SamplingForm, "%s_min_value"%col,
             IntegerField("%s min value (>=, %s median is %s)"%(col, col, dft[col].median())))
         setattr(SamplingForm, "%s_max_value"%col,
             IntegerField("%s max value (<=, %s median is %s)"%(col, col, dft[col].median())))
@@ -199,9 +200,9 @@ def sample2():
             maxv = session.get("sampling_%s_max_value"%col, dft[col].max())
             setattr(getattr(form, "%s_min_value"%col), "data", minv)
             setattr(getattr(form, "%s_max_value"%col), "data", maxv)
-        setattr(getattr(form, "random_seed"), "data", 
+        setattr(getattr(form, "random_seed"), "data",
                         session.get("random_seed", 1))
-        setattr(getattr(form, "target_num_segments"), "data", 
+        setattr(getattr(form, "target_num_segments"), "data",
                         session.get("target_num_segments", 12))
 
     if form.validate_on_submit():
@@ -220,7 +221,7 @@ def sample2():
         sampled_records = dft.to_dict("records")
         session["sampled_records"] = sampled_records
 
-    return render_template("lenasampler/sampling.html", 
+    return render_template("lenasampler/sampling.html",
                             form=form,
                             columns=columns,
                             records=sampled_records)
@@ -245,7 +246,7 @@ def export_sampled_audio():
 
     if form.validate_on_submit():
         outdir = "%s_SampledAudioSegments_%s"%(idprefix, uuid.uuid4())
-        df = prepare_audio_files(df, df_ori, audiodir, outdir, idprefix, 
+        df = prepare_audio_files(df, df_ori, audiodir, outdir, idprefix,
                                 itsfilecol, starttimecol, durationcol)
         # prepare zipfile for download
         zipout = outdir + ".zip"
@@ -266,7 +267,7 @@ def export_sampled_audio():
             'Content-Disposition': 'attachment; filename=%s;'%export_fn
         })
 
-    return render_template("lenasampler/export.html", 
+    return render_template("lenasampler/export.html",
                             form=form,
                             columns=columns,
                             records=sampled_records)

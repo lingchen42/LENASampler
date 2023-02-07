@@ -22,7 +22,7 @@ def its_wav_match_quality_check(its_file_names, audio_dir, idprefix):
     missing_files = [remove_audio_fn_prefix(fn.replace(".wav", ".its"))\
                      for fn in missing_files]
     extra_files = sorted(list(set(audio_files) - set(its_to_wav_files)))
-    matched_files = sorted(list(set(audio_files) & set(its_to_wav_files))) 
+    matched_files = sorted(list(set(audio_files) & set(its_to_wav_files)))
     if (len(missing_files) == 0) and (len(extra_files) == 0):
         is_perfect_match = True
     else:
@@ -37,11 +37,11 @@ def get_audio_duration(fn):
     return int(a.duration)
 
 
-def check_audio_duration_match(df, audio_dir, matched_files, 
+def check_audio_duration_match(df, audio_dir, matched_files,
                        missing_files, extra_files,
                        itsfile_col, duration_col):
     '''
-        :params df: dataframe, should contain the its file name 
+        :params df: dataframe, should contain the its file name
                     column and duration column
     '''
     records = []
@@ -63,21 +63,21 @@ def check_audio_duration_match(df, audio_dir, matched_files,
                     "wav duration (s)": audio_duration,
                     "note": note}
         records.append(t_record)
-    
+
     for fn in missing_files:
         dft = df[df[itsfile_col] == fn]
         its_duration = dft[duration_col].sum()
-        t_record = {"Filename": fn, 
+        t_record = {"Filename": fn,
                     "Type": "No matching wav file",
                     "its duration (s)": its_duration,
                     "wav duration (s)": "NA",
                     "note": "No matching wav file found for this its file"}
         records.append(t_record)
-    
+
     for fn in extra_files:
         audio_filepath = os.path.join(audio_dir, fn)
         audio_duration = get_audio_duration(audio_filepath)
-        t_record = {"Filename": fn, 
+        t_record = {"Filename": fn,
                     "Type": "No matching its file",
                     "its duration (s)": "NA",
                     "wav duration (s)": audio_duration,
@@ -106,9 +106,9 @@ def run_quality_check(records, audio_dir, itsfile_col, duration_col, idprefix):
     dft_summary = pd.DataFrame(quality_records)
     dft_summary = dft_summary.reset_index()
 
-    # Does the length of a wav file correspond to 
+    # Does the length of a wav file correspond to
     # the sum of the length of the segments?
-    duration_match_records = check_audio_duration_match(df, audio_dir, 
+    duration_match_records = check_audio_duration_match(df, audio_dir,
         matched_files, missing_files, extra_files, itsfile_col, duration_col)
     dft_per_file = pd.DataFrame(duration_match_records)
     dft_per_file = dft_per_file.reset_index()
@@ -128,16 +128,18 @@ def extract_from_audio_file(its_file, audiodir, idprefix, start, duration,
                             abs_ts, outdir):
     audio_file = "%s_%s"%(idprefix, its_file.replace(".its", ".wav"))
     audio_filepath = os.path.join(audiodir, audio_file)
-    outfn = os.path.join(outdir, 
+    # Colon is not allowed in windows paths and causes unhandled error
+    modified_timestamp = str(abs_ts).replace(":", "-")
+    outfn = os.path.join(outdir,
         audio_file.replace(".wav", "_AbsStart_%s_RelStart_%s_Duration_%s.wav"\
-                                    %(abs_ts, start, duration)))
+                                    %(modified_timestamp, start, duration)))
     a = AudioFileClip(audio_filepath)
     segment = a.subclip(start, start+duration)
     segment.write_audiofile(outfn)
     return outfn
 
 
-def prepare_audio_files(df, df_ori, audiodir, outdir, idprefix, 
+def prepare_audio_files(df, df_ori, audiodir, outdir, idprefix,
                         itsfilecol, starttimecol, durationcol):
     if os.path.exists(outdir):  # remove existing outdir if there is one
         shutil.rmtree(outdir, ignore_errors=True)
@@ -149,15 +151,15 @@ def prepare_audio_files(df, df_ori, audiodir, outdir, idprefix,
     for ind, row in df.iterrows():
         its_file = row[itsfilecol]
         its_file_start = df_ori[df_ori[itsfilecol]==its_file][starttimecol].values[0]
-        its_file_start = parse_time(its_file_start) 
+        its_file_start = parse_time(its_file_start)
         segment_start = row[starttimecol]
         segment_start = parse_time(segment_start)
         segment_relative_start = (segment_start - its_file_start).seconds
         duration = row[durationcol]
-        relative_start_time.append(segment_relative_start) 
-        outfn = extract_from_audio_file(its_file, audiodir, idprefix, 
+        relative_start_time.append(segment_relative_start)
+        outfn = extract_from_audio_file(its_file, audiodir, idprefix,
                                 segment_relative_start, duration,
-                                str(segment_start), outdir) 
+                                str(segment_start), outdir)
         outfns.append(os.path.basename(outfn))
     df["segment_relative_start_time"] = relative_start_time
     df["segment_filename"] = outfns
